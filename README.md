@@ -13,103 +13,7 @@ A powerful FAQ chatbot that combines MeTTa knowledge graphs with Google's Gemini
 - **Rich Responses**: Provides text, images, links, and interactive elements
 - **Automatic Knowledge Extraction**: Extract entities, relationships, and FAQs from text and images
 
-## 🚀 Quick Start
 
-### Option 1: Using the Start Script (Recommended for Unix/Mac)
-
-```bash
-# Make the script executable (if not already)
-chmod +x start.sh
-
-# Run the start script
-./start.sh
-```
-
-The script will:
-1. Create a virtual environment if it doesn't exist
-2. Install all dependencies
-3. Check for a `.env` file with your Gemini API key
-4. Start the server
-
-### Option 2: Using the Demo Script (Recommended for All Platforms)
-
-```bash
-# Activate your virtual environment first
-# On Unix/Mac:
-source venv/bin/activate
-# On Windows:
-# venv\Scripts\activate
-
-# Run the demo script
-python start_demo.py
-```
-
-This script will:
-1. Start the server
-2. Open the demo interface in your default web browser
-3. Handle server shutdown when you're done
-
-
-## 📜 Project Scripts
-
-The project includes several scripts to simplify setup, running, and testing:
-
-### `start.sh` - Unix/Mac Startup Script
-
-A Bash script that handles the complete setup and startup process:
-
-```bash
-./start.sh
-```
-for documentations -> `http://localhost:8000/docs`
-
-- Creates a Python virtual environment if it doesn't exist
-- Activates the virtual environment
-- Installs all dependencies from requirements.txt
-- Checks for a .env file and prompts for Gemini API key if needed
-- Starts the FastAPI server
-
-### `start.bat` - Windows Startup Script
-
-A Windows batch file that performs the same functions as start.sh but for Windows:
-
-```bash
-start.bat
-```
-for documentations -> `http://localhost:8000/docs`
-
-- Creates a Python virtual environment if it doesn't exist
-- Activates the virtual environment
-- Installs all dependencies from requirements.txt
-- Checks for a .env file and prompts for Gemini API key if needed
-- Starts the FastAPI server
-
-### `start_demo.py` - Cross-Platform Demo Launcher
-
-A Python script that provides a more interactive startup experience:
-
-```bash
-python start_demo.py
-```
-for documentations -> `http://localhost:8000/docs`
-
-
-- Checks if the server is already running
-- Starts the server if needed
-- Opens the demo interface in your default web browser
-- Handles graceful shutdown of the server when you're done
-
-<!-- ### `test_multimodal.py` - Multimodal Testing Script
-
-A Python script for testing the multimodal capabilities:
-
-```bash
-python test_multimodal.py path/to/image.jpg "What is in this image?"
-```
-
-- Sends an image and a question to the chatbot API
-- Displays the formatted response
-- Useful for testing the image analysis capabilities -->
 
 ## 🛠️ Manual Setup
 
@@ -122,7 +26,7 @@ python test_multimodal.py path/to/image.jpg "What is in this image?"
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/CryptoMaN-Rahul/metta
+  (https://github.com/Khushi-Mahato/HackIndia-Spark-4-2025-HackHers.git)
    cd metta
    ```
 
@@ -276,26 +180,7 @@ Content-Type: multipart/form-data
 file: image.jpg
 ```
 
-## 📁 Project Structure
 
-```
-domain-specific-faq-chatbot/
-├── src/
-│   ├── main.py                 # FastAPI server and API endpoints
-│   ├── chat/
-│   │   ├── llm.py              # Gemini LLM integration
-│   │   ├── rag.py              # Graph RAG implementation
-│   │   └── auto_extractor.py   # Automatic entity extraction
-│   └── knowledge_graph/
-│       ├── schema.metta        # MeTTa schema definition
-│       └── data.metta          # Knowledge graph data
-├── static/                     # Static assets (CSS, JS, images)
-├── demo.html                   # Interactive demo interface
-├── start_demo.py               # Script to start demo and open browser
-├── start.sh                    # Unix/Mac startup script
-├── requirements.txt            # Python dependencies
-└── .env                        # Environment variables (create this)
-```
 
 ## 🔧 Technical Details
 
