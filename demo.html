@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Domain-Specific FAQ Chatbot with Knowledge Graph Integration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #34A853;
+            --accent-color: #FBBC05;
+            --danger-color: #EA4335;
+            --light-bg: #f8f9fa;
+            --dark-bg: #202124;
+            --text-color: #3c4043;
+            --border-color: #dadce0;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .demo-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 8px;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+            text-align: right;
+        }
+        
+        .assistant-message {
+            background-color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 2px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .assistant-message h3 {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .assistant-message ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        
+        .assistant-message a {
+            color: var(--primary-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--primary-color);
+        }
+        
+        .assistant-message a:hover {
+            border-bottom: 1px solid var(--primary-color);
+        }
+        
+        .assistant-message code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .assistant-message .definition {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-left: 3px solid var(--primary-color);
+            margin: 8px 0;
+        }
+        
+        .assistant-message .example {
+            background-color: #f0f7ff;
+            padding: 8px;
+            border-left: 3px solid var(--accent-color);
+            margin: 8px 0;
+        }
+        
+        .assistant-message p {
+            margin: 8px 0;
+        }
+        
+        .assistant-message img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #3367d6;
+        }
+        
+        .file-input {
+            margin-bottom: 15px;
+        }
+        
+        .file-input label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .knowledge-graph {
+            height: 300px;
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #graph-container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .entity-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .entity-item {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .entity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .entity-name {
+            font-weight: 500;
+        }
+        
+        .entity-type {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .entity-properties {
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            display: none;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .features-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .features-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .features-list li:before {
+            content: "✓";
+            color: var(--secondary-color);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .context-panel {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .context-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* New styles for forms */
+        .form-accordion {
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .form-accordion-header {
+            background-color: var(--light-bg);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .form-accordion-header:hover {
+            background-color: #e9ecef;
+        }
+        
+        .form-accordion-content {
+            padding: 15px;
+            display: none;
+        }
+        
+        .form-accordion-content.active {
+            display: block;
+        }
+        
+        .property-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .property-name, .property-value, .property-metadata {
+            flex: 1;
+        }
+        
+        .result-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .result-success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .result-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .assistant-message .interactive-element {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .assistant-message .collapsible-header {
+            background-color: var(--light-bg);
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .assistant-message .collapsible-content {
+            padding: 10px;
+            display: none;
+        }
+        
+        .assistant-message .collapsible-content.active {
+            display: block;
+        }
+        
+        .assistant-message .toggle-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .assistant-message .interactive-diagram {
+            width: 100%;
+            height: 200px;
+            background-color: var(--light-bg);
+            border-radius: 4px;
+            margin: 10px 0;
+            position: relative;
+        }
+    </style>
+    <!-- Load D3.js for knowledge graph visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Domain-Specific FAQ Chatbot</h1>
+            <div class="subtitle">With Knowledge Graph Integration & Multimodal Capabilities</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="demo-area">
+            <div class="left-column">
+                <div class="panel">
+                    <h2 class="panel-title">Interactive Chat</h2>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant-message">
+                                Hello! I'm your domain-specific FAQ chatbot. I can answer questions using my knowledge graph and analyze images. How can I help you today?
+                            </div>
+                        </div>
+                        
+                        <div class="file-input">
+                            <label for="imageUpload">Upload an image (optional):</label>
+                            <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(this)">
+                            <img id="imagePreview" class="image-preview" alt="Preview">
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" id="userQuestion" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+                            <button onclick="sendMessage()">Send</button>
+                        </div>
+                        
+                        <div class="loading" id="loading">
+                            <div class="spinner"></div>
+                            <span>Processing your request...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('extractedEntities')">Extracted Entities</div>
+                        <div class="tab" onclick="switchTab('context')">Knowledge Context</div>
+                        <div class="tab" onclick="switchTab('knowledgeManagement')">Knowledge Management</div>
+                        <div class="tab" onclick="switchTab('knowledgeExtraction')">Knowledge Extraction</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="extractedEntities">
+                        <h3 class="panel-title">Entities Extracted from Images</h3>
+                        <div class="entity-list" id="entityList">
+                            <div class="entity-item">
+                                <span class="entity-name">No entities extracted yet</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="context">
+                        <h3 class="panel-title">Knowledge Graph Context</h3>
+                        <div class="context-panel" id="contextPanel">
+                            Context will appear here when you ask a question.
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="knowledgeManagement">
+                        <h3 class="panel-title">Add to Knowledge Graph</h3>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('faqForm')">
+                                Add FAQ Entry
+                            </div>
+                            <div class="form-accordion-content" id="faqForm">
+                                <div class="form-group">
+                                    <label for="faqQuestion">Question:</label>
+                                    <input type="text" id="faqQuestion" placeholder="Enter FAQ question">
+                                </div>
+                                <div class="form-group">
+                                    <label for="faqAnswer">Answer:</label>
+                                    <textarea id="faqAnswer" placeholder="Enter FAQ answer" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="faqCategory">Category:</label>
+                                    <input type="text" id="faqCategory" placeholder="Enter category (e.g., General)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="faqConcepts">Concepts:</label>
+                                    <input type="text" id="faqConcepts" placeholder="Space-separated concepts (e.g., concept1 concept2)">
+                                </div>
+                                <button onclick="addFAQ()">Add FAQ</button>
+                                <div id="faqResult" class="result-message"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('entityForm')">
+                                Add Entity
+                            </div>
+                            <div class="form-accordion-content" id="entityForm">
+                                <div class="form-group">
+                                    <label for="entityName">Entity Name:</label>
+                                    <input type="text" id="entityName" placeholder="Enter entity name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="entityType">Entity Type:</label>
+                                    <input type="text" id="entityType" placeholder="Enter entity type (e.g., Person, Concept)">
+                                </div>
+                                <div class="form-group">
+                                    <label>Properties:</label>
+                                    <div id="entityProperties">
+                                        <div class="property-row">
+                                            <input type="text" placeholder="Property name" class="property-name">
+                                            <input type="text" placeholder="Property value" class="property-value">
+                                            <input type="text" placeholder="Metadata" class="property-metadata">
+                                            <button type="button" onclick="removeProperty(this)">-</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addProperty()">Add Property</button>
+                                </div>
+                                <button onclick="addEntity()">Add Entity</button>
+                                <div id="entityResult" class="result-message"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('relationshipForm')">
+                                Add Relationship
+                            </div>
+                            <div class="form-accordion-content" id="relationshipForm">
+                                <div class="form-group">
+                                    <label for="fromEntity">From Entity:</label>
+                                    <input type="text" id="fromEntity" placeholder="Source entity name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="relationshipType">Relationship Type:</label>
+                                    <input type="text" id="relationshipType" placeholder="Type of relationship (e.g., uses, contains)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="toEntity">To Entity:</label>
+                                    <input type="text" id="toEntity" placeholder="Target entity name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="relationshipContext">Context:</label>
+                                    <input type="text" id="relationshipContext" placeholder="Additional context (optional)">
+                                </div>
+                                <button onclick="addRelationship()">Add Relationship</button>
+                                <div id="relationshipResult" class="result-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="knowledgeExtraction">
+                        <h3 class="panel-title">Extract Knowledge</h3>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('textExtractionForm')">
+                                Extract from Text
+                            </div>
+                            <div class="form-accordion-content" id="textExtractionForm">
+                                <div class="form-group">
+                                    <label for="extractionText">Text:</label>
+                                    <textarea id="extractionText" placeholder="Enter text to extract knowledge from" rows="5"></textarea>
+                                </div>
+                                <button onclick="extractFromText()">Extract</button>
+                                <div id="textExtractionResult" class="result-message"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('documentExtractionForm')">
+                                Extract from Document
+                            </div>
+                            <div class="form-accordion-content" id="documentExtractionForm">
+                                <div class="form-group">
+                                    <label for="extractionDocument">Document Text:</label>
+                                    <textarea id="extractionDocument" placeholder="Enter document text to extract knowledge from" rows="8"></textarea>
+                                </div>
+                                <button onclick="extractFromDocument()">Extract</button>
+                                <div id="documentExtractionResult" class="result-message"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-accordion">
+                            <div class="form-accordion-header" onclick="toggleAccordion('imageExtractionForm')">
+                                Extract from Image
+                            </div>
+                            <div class="form-accordion-content" id="imageExtractionForm">
+                                <div class="form-group">
+                                    <label for="extractionImage">Image:</label>
+                                    <input type="file" id="extractionImage" accept="image/*">
+                                </div>
+                                <button onclick="extractFromImage()">Extract</button>
+                                <div id="imageExtractionResult" class="result-message"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="panel">
+                    <h2 class="panel-title">Knowledge Graph Visualization</h2>
+                    <div class="knowledge-graph">
+                        <div id="graph-container"></div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2 class="panel-title">Key Features</h2>
+                    <ul class="features-list">
+                        <li>Multimodal understanding (text + images)</li>
+                        <li>Knowledge graph integration for contextual answers</li>
+                        <li>Automatic entity extraction from images</li>
+                        <li>Conversation history for contextual follow-ups</li>
+                        <li>Real-time knowledge graph updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Domain-Specific FAQ Chatbot with Knowledge Graph Integration | HackIndia 2025</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Chat history
+        let chatHistory = [];
+        let extractedEntities = [];
+        let knowledgeGraph = {
+            nodes: [],
+            links: []
+        };
+        
+        // Initialize graph visualization
+        initGraph();
+        
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function sendMessage() {
+            const userInput = document.getElementById('userQuestion');
+            const question = userInput.value.trim();
+            const imageUpload = document.getElementById('imageUpload');
+            
+            if (!question) return;
+            
+            // Add user message to chat
+            addMessage(question, 'user');
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('text', question);
+            
+            // Add image if selected
+            if (imageUpload.files.length > 0) {
+                formData.append('files', imageUpload.files[0]);
+            }
+            
+            // Add chat history
+            formData.append('history', JSON.stringify(chatHistory));
+            
+            // Send request to server
+            fetch('http://localhost:8000/chat/multimodal', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                // Add assistant message to chat
+                addMessage(data.text, 'assistant');
+                
+                // Update chat history
+                if (data.history) {
+                    chatHistory = data.history;
+                } else {
+                    chatHistory.push({
+                        user: question,
+                        assistant: data.text
+                    });
+                }
+                
+                // Update extracted entities if any
+                if (data.extracted_entities && data.extracted_entities.length > 0) {
+                    updateExtractedEntities(data.extracted_entities);
+                    
+                    // Add entities to knowledge graph
+                    addEntitiesToGraph(data.extracted_entities);
+                }
+                
+                // Update context panel
+                if (data.context) {
+                    updateContextPanel(data.context);
+                }
+                
+                // Clear image upload
+                imageUpload.value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+            })
+            .catch(error => {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show error message
+                addMessage(`Error: ${error.message}`, 'assistant');
+                console.error('Error:', error);
+            });
+        }
+        
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            if (sender === 'assistant') {
+                // Check if the text starts with ```html and ends with ```
+                if (text.startsWith('```html') && text.endsWith('```')) {
+                    // Extract the HTML content from the code block
+                    const htmlContent = text.substring(7, text.length - 3).trim();
+                    messageDiv.innerHTML = htmlContent;
+                } else if (text.startsWith('```') && text.endsWith('```')) {
+                    // Handle other code blocks
+                    const codeContent = text.substring(3, text.length - 3).trim();
+                    messageDiv.innerHTML = `<pre><code>${codeContent}</code></pre>`;
+                } else {
+                    // Use innerHTML for assistant messages to render HTML
+                    messageDiv.innerHTML = text;
+                }
+                
+                // Make links open in new tab
+                const links = messageDiv.querySelectorAll('a');
+                links.forEach(link => {
+                    if (!link.hasAttribute('target')) {
+                        link.setAttribute('target', '_blank');
+                    }
+                });
+                
+                // Setup interactive elements
+                setupInteractiveElements(messageDiv);
+            } else {
+                // Use textContent for user messages
+                messageDiv.textContent = text;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function setupInteractiveElements(messageDiv) {
+            // Setup collapsible sections
+            const collapsibleHeaders = messageDiv.querySelectorAll('.collapsible-header');
+            collapsibleHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                    
+                    // Update button text
+                    const button = this.querySelector('.toggle-button');
+                    if (button) {
+                        button.textContent = content.classList.contains('active') ? 'Hide' : 'Show';
+                    }
+                });
+            });
+            
+            // Add collapsible functionality to definition and example divs
+            const definitionDivs = messageDiv.querySelectorAll('.definition');
+            definitionDivs.forEach(div => {
+                // Get the first child (usually the title)
+                const title = div.querySelector('b');
+                if (title) {
+                    // Create a wrapper for the collapsible content
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'interactive-element';
+                    
+                    // Create the header
+                    const header = document.createElement('div');
+                    header.className = 'collapsible-header';
+                    header.innerHTML = title.outerHTML + '<button class="toggle-button">Show</button>';
+                    
+                    // Create the content
+                    const content = document.createElement('div');
+                    content.className = 'collapsible-content';
+                    
+                    // Move the content from the original div to the new content div
+                    while (div.childNodes.length > 0) {
+                        if (div.firstChild !== title) {
+                            content.appendChild(div.firstChild);
+                        } else {
+                            div.removeChild(div.firstChild);
+                        }
+                    }
+                    
+                    // Assemble the new structure
+                    wrapper.appendChild(header);
+                    wrapper.appendChild(content);
+                    div.appendChild(wrapper);
+                    
+                    // Add event listener
+                    header.addEventListener('click', function() {
+                        content.classList.toggle('active');
+                        const button = this.querySelector('.toggle-button');
+                        if (button) {
+                            button.textContent = content.classList.contains('active') ? 'Hide' : 'Show';
+                        }
+                    });
+                }
+            });
+        }
+        
+        function updateExtractedEntities(entities) {
+            const entityList = document.getElementById('entityList');
+            entityList.innerHTML = '';
+            
+            if (entities.length === 0) {
+                const entityItem = document.createElement('div');
+                entityItem.className = 'entity-item';
+                entityItem.innerHTML = '<span class="entity-name">No entities extracted</span>';
+                entityList.appendChild(entityItem);
+                return;
+            }
+            
+            entities.forEach(entity => {
+                const entityItem = document.createElement('div');
+                entityItem.className = 'entity-item';
+                
+                let html = `<div class="entity-name">${entity.name || 'Unnamed'}</div>`;
+                html += `<div class="entity-type">${entity.type || 'Unknown type'}</div>`;
+                
+                if (entity.properties && Object.keys(entity.properties).length > 0) {
+                    html += '<div class="entity-properties">';
+                    for (const [key, value] of Object.entries(entity.properties)) {
+                        if (typeof value === 'object' && value.value) {
+                            html += `<div>${key}: ${value.value}</div>`;
+                        } else {
+                            html += `<div>${key}: ${value}</div>`;
+                        }
+                    }
+                    html += '</div>';
+                }
+                
+                entityItem.innerHTML = html;
+                entityList.appendChild(entityItem);
+            });
+            
+            // Store extracted entities
+            extractedEntities = entities;
+        }
+        
+        function updateContextPanel(context) {
+            const contextPanel = document.getElementById('contextPanel');
+            
+            if (!context || context.length === 0) {
+                contextPanel.textContent = 'No relevant context found.';
+                return;
+            }
+            
+            let html = '';
+            
+            // Process FAQs
+            const faqs = context.filter(item => item.faq);
+            if (faqs.length > 0) {
+                html += '<div class="context-title">Relevant FAQs:</div>';
+                faqs.forEach(item => {
+                    html += `<div><strong>Q: ${item.faq.question}</strong></div>`;
+                    html += `<div>A: ${item.faq.answer}</div>`;
+                    if (item.faq.category) {
+                        html += `<div>Category: ${item.faq.category}</div>`;
+                    }
+                    html += '<br>';
+                });
+            }
+            
+            // Process Entities
+            const entities = context.filter(item => item.entity);
+            if (entities.length > 0) {
+                html += '<div class="context-title">Relevant Entities:</div>';
+                entities.forEach(item => {
+                    html += `<div><strong>${item.entity.name}</strong> (${item.entity.type})</div>`;
+                    if (item.entity.properties && Object.keys(item.entity.properties).length > 0) {
+                        html += '<div>Properties:</div>';
+                        html += '<ul>';
+                        for (const [key, value] of Object.entries(item.entity.properties)) {
+                            if (typeof value === 'object' && value.value) {
+                                html += `<li>${key}: ${value.value}</li>`;
+                            } else {
+                                html += `<li>${key}: ${value}</li>`;
+                            }
+                        }
+                        html += '</ul>';
+                    }
+                    html += '<br>';
+                });
+            }
+            
+            contextPanel.innerHTML = html || 'No specific context used.';
+        }
+        
+        function switchTab(tabId) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            // Update tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+        
+        function initGraph() {
+            const width = document.getElementById('graph-container').clientWidth;
+            const height = document.getElementById('graph-container').clientHeight;
+            
+            // Create SVG
+            const svg = d3.select('#graph-container')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Create simulation
+            const simulation = d3.forceSimulation()
+                .force('link', d3.forceLink().id(d => d.id).distance(100))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2));
+            
+            // Create container for links and nodes
+            const g = svg.append('g');
+            const link = g.append('g').selectAll('.link');
+            const node = g.append('g').selectAll('.node');
+            
+            // Add zoom behavior
+            svg.call(d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                }));
+            
+            // Initial empty graph
+            updateGraph(knowledgeGraph);
+            
+            // Function to update graph
+            function updateGraph(graph) {
+                // Update links
+                const links = link.data(graph.links, d => `${d.source}-${d.target}`);
+                links.exit().remove();
+                const linksEnter = links.enter()
+                    .append('line')
+                    .attr('class', 'link')
+                    .attr('stroke', '#999')
+                    .attr('stroke-opacity', 0.6)
+                    .attr('stroke-width', 2);
+                
+                // Update nodes
+                const nodes = node.data(graph.nodes, d => d.id);
+                nodes.exit().remove();
+                const nodesEnter = nodes.enter()
+                    .append('g')
+                    .attr('class', 'node')
+                    .call(d3.drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended));
+                
+                nodesEnter.append('circle')
+                    .attr('r', 8)
+                    .attr('fill', d => getNodeColor(d.type));
+                
+                nodesEnter.append('text')
+                    .attr('dx', 12)
+                    .attr('dy', '.35em')
+                    .text(d => d.name)
+                    .attr('font-size', '12px');
+                
+                // Update simulation
+                simulation.nodes(graph.nodes);
+                simulation.force('link').links(graph.links);
+                simulation.alpha(1).restart();
+                
+                // Tick function
+                simulation.on('tick', () => {
+                    linksEnter
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+                    
+                    nodesEnter
+                        .attr('transform', d => `translate(${d.x},${d.y})`);
+                });
+                
+                // Drag functions
+                function dragstarted(event, d) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x;
+                    d.fy = d.y;
+                }
+                
+                function dragged(event, d) {
+                    d.fx = event.x;
+                    d.fy = event.y;
+                }
+                
+                function dragended(event, d) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null;
+                    d.fy = null;
+                }
+            }
+            
+            // Make updateGraph available globally
+            window.updateGraphVisualization = updateGraph;
+        }
+        
+        function getNodeColor(type) {
+            const colors = {
+                'Person': '#4285F4',
+                'Organization': '#34A853',
+                'Location': '#FBBC05',
+                'Concept': '#EA4335',
+                'Product': '#9C27B0',
+                'Event': '#FF9800'
+            };
+            
+            return colors[type] || '#757575';
+        }
+        
+        function addEntitiesToGraph(entities) {
+            // Add new entities to the graph
+            entities.forEach(entity => {
+                if (!entity.name) return;
+                
+                // Check if node already exists
+                const existingNode = knowledgeGraph.nodes.find(n => n.id === entity.name);
+                if (!existingNode) {
+                    knowledgeGraph.nodes.push({
+                        id: entity.name,
+                        name: entity.name,
+                        type: entity.type || 'Unknown'
+                    });
+                }
+                
+                // Add relationships if any
+                if (entity.relations) {
+                    entity.relations.forEach(relation => {
+                        // Add target node if it doesn't exist
+                        const targetExists = knowledgeGraph.nodes.find(n => n.id === relation.to);
+                        if (!targetExists) {
+                            knowledgeGraph.nodes.push({
+                                id: relation.to,
+                                name: relation.to,
+                                type: 'Unknown'
+                            });
+                        }
+                        
+                        // Add link if it doesn't exist
+                        const linkExists = knowledgeGraph.links.find(l => 
+                            l.source === entity.name && l.target === relation.to);
+                        
+                        if (!linkExists) {
+                            knowledgeGraph.links.push({
+                                source: entity.name,
+                                target: relation.to,
+                                type: relation.type
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Update graph visualization
+            window.updateGraphVisualization(knowledgeGraph);
+        }
+        
+        // Add some initial nodes to the graph for demonstration
+        function addInitialNodes() {
+            knowledgeGraph.nodes = [
+                { id: "Graph Database", name: "Graph Database", type: "Concept" },
+                { id: "Neo4j", name: "Neo4j", type: "Product" },
+                { id: "Knowledge Graph", name: "Knowledge Graph", type: "Concept" },
+                { id: "MeTTa", name: "MeTTa", type: "Product" },
+                { id: "Gemini", name: "Gemini", type: "Product" }
+            ];
+            
+            knowledgeGraph.links = [
+                { source: "Neo4j", target: "Graph Database", type: "is_a" },
+                { source: "Knowledge Graph", target: "Graph Database", type: "uses" },
+                { source: "MeTTa", target: "Knowledge Graph", type: "implements" },
+                { source: "Gemini", target: "Knowledge Graph", type: "enhances" }
+            ];
+            
+            window.updateGraphVisualization(knowledgeGraph);
+        }
+        
+        // Add initial nodes after a short delay
+        setTimeout(addInitialNodes, 500);
+        
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+            } else {
+                content.classList.add('active');
+            }
+        }
+        
+        function addProperty() {
+            const propertiesDiv = document.getElementById('entityProperties');
+            const newRow = document.createElement('div');
+            newRow.className = 'property-row';
+            newRow.innerHTML = `
+                <input type="text" placeholder="Property name" class="property-name">
+                <input type="text" placeholder="Property value" class="property-value">
+                <input type="text" placeholder="Metadata" class="property-metadata">
+                <button type="button" onclick="removeProperty(this)">-</button>
+            `;
+            propertiesDiv.appendChild(newRow);
+        }
+        
+        function removeProperty(button) {
+            const row = button.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        
+        function showResult(elementId, message, isSuccess) {
+            const resultElement = document.getElementById(elementId);
+            resultElement.textContent = message;
+            resultElement.className = 'result-message ' + (isSuccess ? 'result-success' : 'result-error');
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                resultElement.className = 'result-message';
+            }, 5000);
+        }
+        
+        async function addFAQ() {
+            const question = document.getElementById('faqQuestion').value.trim();
+            const answer = document.getElementById('faqAnswer').value.trim();
+            const category = document.getElementById('faqCategory').value.trim() || 'General';
+            const concepts = document.getElementById('faqConcepts').value.trim();
+            
+            if (!question || !answer) {
+                showResult('faqResult', 'Question and answer are required', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/faq', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        question,
+                        answer,
+                        category,
+                        concepts
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('faqResult', 'FAQ added successfully', true);
+                    // Clear form
+                    document.getElementById('faqQuestion').value = '';
+                    document.getElementById('faqAnswer').value = '';
+                    document.getElementById('faqCategory').value = '';
+                    document.getElementById('faqConcepts').value = '';
+                } else {
+                    showResult('faqResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('faqResult', `Error: ${error.message}`, false);
+            }
+        }
+        
+        async function addEntity() {
+            const name = document.getElementById('entityName').value.trim();
+            const entityType = document.getElementById('entityType').value.trim();
+            
+            if (!name || !entityType) {
+                showResult('entityResult', 'Entity name and type are required', false);
+                return;
+            }
+            
+            // Collect properties
+            const properties = {};
+            const propertyRows = document.querySelectorAll('#entityProperties .property-row');
+            
+            propertyRows.forEach(row => {
+                const propertyName = row.querySelector('.property-name').value.trim();
+                const propertyValue = row.querySelector('.property-value').value.trim();
+                const propertyMetadata = row.querySelector('.property-metadata').value.trim();
+                
+                if (propertyName && propertyValue) {
+                    properties[propertyName] = {
+                        value: propertyValue,
+                        metadata: propertyMetadata || ''
+                    };
+                }
+            });
+            
+            try {
+                const response = await fetch('http://localhost:8000/entity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        entity_type: entityType,
+                        properties
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('entityResult', 'Entity added successfully', true);
+                    // Clear form
+                    document.getElementById('entityName').value = '';
+                    document.getElementById('entityType').value = '';
+                    document.getElementById('entityProperties').innerHTML = `
+                        <div class="property-row">
+                            <input type="text" placeholder="Property name" class="property-name">
+                            <input type="text" placeholder="Property value" class="property-value">
+                            <input type="text" placeholder="Metadata" class="property-metadata">
+                            <button type="button" onclick="removeProperty(this)">-</button>
+                        </div>
+                    `;
+                    
+                    // Add the entity to the knowledge graph visualization
+                    const newEntity = {
+                        name: name,
+                        type: entityType,
+                        properties: properties
+                    };
+                    addEntitiesToGraph([newEntity]);
+                } else {
+                    showResult('entityResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('entityResult', `Error: ${error.message}`, false);
+            }
+        }
+        
+        async function addRelationship() {
+            const fromEntity = document.getElementById('fromEntity').value.trim();
+            const relationshipType = document.getElementById('relationshipType').value.trim();
+            const toEntity = document.getElementById('toEntity').value.trim();
+            const context = document.getElementById('relationshipContext').value.trim();
+            
+            if (!fromEntity || !relationshipType || !toEntity) {
+                showResult('relationshipResult', 'From entity, relationship type, and to entity are required', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/relationship', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        from_entity: fromEntity,
+                        relationship_type: relationshipType,
+                        to_entity: toEntity,
+                        context
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('relationshipResult', 'Relationship added successfully', true);
+                    // Clear form
+                    document.getElementById('fromEntity').value = '';
+                    document.getElementById('relationshipType').value = '';
+                    document.getElementById('toEntity').value = '';
+                    document.getElementById('relationshipContext').value = '';
+                    
+                    // Add the relationship to the knowledge graph visualization
+                    const fromEntityExists = knowledgeGraph.nodes.find(n => n.id === fromEntity);
+                    if (!fromEntityExists) {
+                        knowledgeGraph.nodes.push({
+                            id: fromEntity,
+                            name: fromEntity,
+                            type: 'Unknown'
+                        });
+                    }
+                    
+                    const toEntityExists = knowledgeGraph.nodes.find(n => n.id === toEntity);
+                    if (!toEntityExists) {
+                        knowledgeGraph.nodes.push({
+                            id: toEntity,
+                            name: toEntity,
+                            type: 'Unknown'
+                        });
+                    }
+                    
+                    knowledgeGraph.links.push({
+                        source: fromEntity,
+                        target: toEntity,
+                        type: relationshipType
+                    });
+                    
+                    window.updateGraphVisualization(knowledgeGraph);
+                } else {
+                    showResult('relationshipResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('relationshipResult', `Error: ${error.message}`, false);
+            }
+        }
+        
+        async function extractFromText() {
+            const text = document.getElementById('extractionText').value.trim();
+            
+            if (!text) {
+                showResult('textExtractionResult', 'Text is required', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/extract/text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('textExtractionResult', 'Knowledge extracted successfully', true);
+                    // Clear form
+                    document.getElementById('extractionText').value = '';
+                    
+                    // Update entities if any were extracted
+                    if (data.extracted_data && data.extracted_data.entities) {
+                        updateExtractedEntities(data.extracted_data.entities);
+                        addEntitiesToGraph(data.extracted_data.entities);
+                    }
+                } else {
+                    showResult('textExtractionResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('textExtractionResult', `Error: ${error.message}`, false);
+            }
+        }
+        
+        async function extractFromDocument() {
+            const text = document.getElementById('extractionDocument').value.trim();
+            
+            if (!text) {
+                showResult('documentExtractionResult', 'Document text is required', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:8000/extract/document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('documentExtractionResult', 'Knowledge extracted successfully', true);
+                    // Clear form
+                    document.getElementById('extractionDocument').value = '';
+                    
+                    // Update entities if any were extracted
+                    if (data.extracted_data && data.extracted_data.entities) {
+                        updateExtractedEntities(data.extracted_data.entities);
+                        addEntitiesToGraph(data.extracted_data.entities);
+                    }
+                } else {
+                    showResult('documentExtractionResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('documentExtractionResult', `Error: ${error.message}`, false);
+            }
+        }
+        
+        async function extractFromImage() {
+            const imageInput = document.getElementById('extractionImage');
+            
+            if (!imageInput.files || imageInput.files.length === 0) {
+                showResult('imageExtractionResult', 'Image is required', false);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', imageInput.files[0]);
+            
+            try {
+                const response = await fetch('http://localhost:8000/extract/image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('imageExtractionResult', 'Knowledge extracted successfully', true);
+                    // Clear form
+                    imageInput.value = '';
+                    
+                    // Update entities if any were extracted
+                    if (data.extracted_data && data.extracted_data.entities) {
+                        updateExtractedEntities(data.extracted_data.entities);
+                        addEntitiesToGraph(data.extracted_data.entities);
+                    }
+                } else {
+                    showResult('imageExtractionResult', `Error: ${data.detail || 'Unknown error'}`, false);
+                }
+            } catch (error) {
+                showResult('imageExtractionResult', `Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html> 
