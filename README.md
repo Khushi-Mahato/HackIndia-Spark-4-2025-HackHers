@@ -2,7 +2,7 @@
 
 A powerful FAQ chatbot that combines MeTTa knowledge graphs with Google's Gemini 2.0 LLM for enhanced, context-aware responses. Features multimodal capabilities, automatic knowledge extraction, and rich interactive responses.
 
-## 🌟 Features
+##  Features
 
 - **Knowledge Graph Integration**: Uses MeTTa for structured knowledge representation
 - **LLM Integration**: Leverages Google Gemini 2.0 for natural language understanding
@@ -58,7 +58,7 @@ A powerful FAQ chatbot that combines MeTTa knowledge graphs with Google's Gemini
    
    > **Important**: Always access the demo through the server at `http://localhost:8000/demo.html`. Opening the HTML file directly will not work as it needs to connect to the server API.
 
-## 🧠 Using the Chatbot
+##  Using the Chatbot
 
 ### Interactive Demo Interface
 
@@ -75,110 +75,6 @@ To use the demo:
 2. Open `http://localhost:8000/demo.html` in your browser
 3. Type questions in the chat input or upload images
 4. View the knowledge graph visualization to see connections
-
-### API Endpoints Reference
-
-#### Chat Endpoints
-
-1. **Text-only Chat**
-```http
-POST /chat
-Content-Type: application/json
-
-{
-    "text": "What is a knowledge graph?",
-    "history": [{"user": "Previous question", "assistant": "Previous answer"}]
-}
-```
-
-2. **Multimodal Chat (Text + Images)**
-```http
-POST /chat/multimodal
-Content-Type: multipart/form-data
-
-text: What is in this image?
-files: [image.jpg]
-history: [{"user": "Previous question", "assistant": "Previous answer"}]
-```
-
-#### Knowledge Management Endpoints
-
-1. **Add FAQ**
-```http
-POST /faq
-Content-Type: application/json
-
-{
-    "question": "What is a knowledge graph?",
-    "answer": "A knowledge graph is a network of entities, their semantic types, properties, and relationships between entities.",
-    "category": "Knowledge Representation",
-    "concepts": "knowledge graph semantic network ontology"
-}
-```
-
-2. **Add Entity**
-```http
-POST /entity
-Content-Type: application/json
-
-{
-    "name": "Knowledge Graph",
-    "entity_type": "Concept",
-    "properties": {
-        "definition": {
-            "value": "A knowledge graph is a network of entities, their semantic types, properties, and relationships.",
-            "metadata": "source: documentation confidence: 0.9"
-        },
-        "created_by": {
-            "value": "Google",
-            "metadata": "year: 2012"
-        }
-    }
-}
-```
-
-3. **Add Relationship**
-```http
-POST /relationship
-Content-Type: application/json
-
-{
-    "from_entity": "Knowledge Graph",
-    "relationship_type": "is_a",
-    "to_entity": "Semantic Network",
-    "context": "confidence: 0.85"
-}
-```
-
-#### Knowledge Extraction Endpoints
-
-1. **Extract from Text**
-```http
-POST /extract/text
-Content-Type: application/json
-
-{
-    "text": "Knowledge graphs are a type of semantic network used to store interlinked descriptions of entities."
-}
-```
-
-2. **Extract from Document**
-```http
-POST /extract/document
-Content-Type: application/json
-
-{
-    "text": "Long document text with multiple paragraphs..."
-}
-```
-
-3. **Extract from Image**
-```http
-POST /extract/image
-Content-Type: multipart/form-data
-
-file: image.jpg
-```
 
 
 
