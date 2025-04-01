@@ -25,8 +25,8 @@ A powerful FAQ chatbot that combines MeTTa knowledge graphs with Google's Gemini
 ### Installation
 
 1. Clone the repository:
-   ```bash
-  (https://github.com/Khushi-Mahato/HackIndia-Spark-4-2025-HackHers.git)
+   ```
+   bash(https://github.com/Khushi-Mahato/HackIndia-Spark-4-2025-HackHers.git)
    cd metta
    ```
 
